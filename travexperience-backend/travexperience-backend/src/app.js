@@ -30,7 +30,12 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
-app.use(cors()); // Habilita CORS (ajustar origin en producción)
+// Configuración de CORS dinámica
+app.use(cors({
+  origin: process.env.FRONTEND_PUBLIC_URL || 'http://localhost:5173', // Usa la variable en Render, o localhost para desarrollo
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  credentials: true // Crucial si manejas cookies de sesión o tokens JWT en headers específicos
+}));; // Habilita CORS (ajustar origin en producción)
 app.use(compression()); // Comprime las respuestas (clave para el consumo del wearable)
 
 // El webhook de Stripe necesita el body CRUDO (sin parsear) para poder

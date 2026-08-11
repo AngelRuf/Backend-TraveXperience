@@ -45,12 +45,15 @@ const startServer = async () => {
     const server = http.createServer(app);
 
     const io = new Server(server, {
-      cors: { origin: '*' }, // TODO: restringir origin en producción
+      cors: { 
+        origin: process.env.FRONTEND_PUBLIC_URL,
+        methods: ["GET", "POST"]
+      }, 
     });
 
     initSockets(io);
 
-    server.listen(PORT, () => {
+    server.listen(PORT, '0.0.0.0', () => {
       logger.info(`🚀 TraveXperience API + sockets corriendo en el puerto ${PORT} (${process.env.NODE_ENV})`);
     });
 
