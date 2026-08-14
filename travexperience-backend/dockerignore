@@ -1,0 +1,19 @@
+node_modules
+npm-debug.log
+*.log
+
+.env
+.env.*
+!.env.example
+
+.git
+.gitignore
+
+Tests
+coverage
+
+# Los uploads se persisten con un volumen, no se necesitan en la imagen
+uploads/*
+!uploads/.gitkeep
+
+README-B.md
