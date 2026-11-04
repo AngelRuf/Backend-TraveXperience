@@ -32,7 +32,7 @@ router.use('/reviews', reviewRoutes); // Módulo 4: Sistema de Reseñas
 router.use('/wearable', wearableRoutes); // Módulo 5: Interconexión Wearable
 router.use('/weather', weatherRoutes); // Módulo 6: Clima (OpenWeatherMap)
 router.use('/payments', paymentRoutes); // Módulo 7: Pagos (Stripe)
-router.use('/maps', mapsRoutes); // Módulo 8: Geocodificación (Nominatim / OSM)
+//router.use('/maps', mapsRoutes); // Módulo 8: Geocodificación (Nominatim / OSM)
 router.use('/favorites', favoriteRoutes); // Módulo 9: Favoritos
 router.use('/hotels', hotelRoutes); // Módulo 10: Hoteles (Admin)
 router.use('/transport-routes', transportRoutes); // Módulo 11: Transporte (Admin)
