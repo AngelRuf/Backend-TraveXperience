@@ -1,0 +1,169 @@
+name: CI/CD — Backend TraveXperience
+
+# Flujo:  cambio de código/versión → pruebas → artefacto → despliegue (Render) → verificación → release
+#   • Pull request            → pruebas + artefacto (NO despliega)
+#   • Push a main             → pruebas + artefacto + despliegue + smoke test
+#   • Tag vX.Y.Z (release)    → lo anterior + GitHub Release con el artefacto
+on:
+  push:
+    branches: [main]
+    paths: ['backend/**', '.github/workflows/**']   # un cambio solo del front/docs/BD no despliega la API
+    tags: ['v*.*.*']
+  pull_request:
+    branches: [main]
+    paths: ['backend/**', '.github/workflows/**']
+
+permissions:
+  contents: read
+
+# Monorepo: los pasos "run" se ejecutan dentro de la carpeta del backend.
+defaults:
+  run:
+    working-directory: backend
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  # ---------------------------------------------------------------- 1. PRUEBAS
+  test:
+    name: Pruebas automatizadas
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      NODE_ENV: test
+      # Valor ficticio solo para CI (las pruebas firman tokens de prueba). No es un secreto real.
+      JWT_SECRET: ci-only-not-a-real-secret
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+
+      - name: Verificar que no hay secretos versionados
+        run: bash scripts/ci/check-no-secrets.sh
+
+      - name: Instalar dependencias
+        # Sin --omit=optional: Jest 30 necesita el binario nativo opcional de
+        # unrs-resolver. Si tfjs-node (también opcional) no compila, npm lo omite
+        # y el código usa @tensorflow/tfjs en JS puro.
+        run: npm ci
+
+      - name: Verificar sintaxis
+        run: npm run verify:syntax
+
+      - name: Pruebas (Jest)
+        run: npm test -- --ci
+
+  # ------------------------------------------------------------- 2. ARTEFACTO
+  build:
+    name: Generar artefacto
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      artifact_name: ${{ steps.build.outputs.artifact_name }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+
+      - name: La etiqueta debe coincidir con la versión de package.json
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          PKG="v$(node -p "require('./package.json').version")"
+          if [ "$PKG" != "${GITHUB_REF_NAME}" ]; then
+            echo "::error::La etiqueta ${GITHUB_REF_NAME} no coincide con package.json (${PKG}). Ejecuta 'npm version' antes de etiquetar."
+            exit 1
+          fi
+
+      - name: Construir artefacto (.tar.gz + sha256)
+        id: build
+        run: bash scripts/ci/build-artifact.sh
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: backend-release
+          path: backend/dist/*
+          retention-days: 30
+          if-no-files-found: error
+
+  # ------------------------------------------------------------- 3. DESPLIEGUE
+  deploy:
+    name: Desplegar en Render y verificar
+    needs: build
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: production
+      url: ${{ vars.PROD_URL }}
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Disparar despliegue (Render Deploy Hook)
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "::error::Falta el secret RENDER_DEPLOY_HOOK_URL (Settings → Secrets and variables → Actions)."; exit 1
+          fi
+          # ref=<sha> fuerza a Render a desplegar exactamente este commit.
+          curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&ref=${GITHUB_SHA}" -o /dev/null
+          echo "Despliegue solicitado para ${GITHUB_SHA}"
+
+      - name: Esperar a que Render sirva este commit
+        env:
+          PROD_URL: ${{ vars.PROD_URL }}
+        run: bash scripts/ci/wait-for-deploy.sh "$PROD_URL" "$GITHUB_SHA" 900
+
+      - name: Smoke test posterior al despliegue
+        env:
+          PROD_URL: ${{ vars.PROD_URL }}
+          CORS_TEST_ORIGIN: ${{ vars.CORS_TEST_ORIGIN }}
+          SMOKE_MAX_MS: '5000'
+        run: bash scripts/ci/smoke-test.sh "$PROD_URL" "$CORS_TEST_ORIGIN"
+
+      - name: Qué hacer si falló
+        if: failure()
+        run: |
+          {
+            echo "### ❌ El despliegue o la verificación fallaron"
+            echo "1. Revisa los logs en el panel de Render (Logs)."
+            echo "2. Revierte: Actions → **Rollback (re-desplegar versión anterior)** → indica el tag o SHA estable."
+            echo "3. Guía completa: \`docs/DEPLOY.md\`."
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  # ---------------------------------------------------------------- 4. RELEASE
+  release:
+    name: Publicar GitHub Release
+    needs: [build, deploy]
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        working-directory: .     # este job no hace checkout: no existe backend/
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: backend-release
+          path: dist
+
+      - name: Crear release con el artefacto
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" dist/* \
+            --repo "$GITHUB_REPOSITORY" \
+            --title "TraveXperience Backend $GITHUB_REF_NAME" \
+            --generate-notes

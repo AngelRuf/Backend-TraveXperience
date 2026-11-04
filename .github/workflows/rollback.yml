@@ -1,0 +1,59 @@
+name: Rollback (re-desplegar versión anterior)
+
+# Recuperación manual: vuelve a desplegar un tag o commit estable y verifica el servicio.
+# Uso: Actions → "Rollback" → Run workflow → ref = v1.0.0 (o un SHA).
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Tag o commit estable a restaurar (ej. v1.0.0)'
+        required: true
+
+permissions:
+  contents: read
+
+# Monorepo: los pasos "run" se ejecutan dentro de la carpeta del backend.
+defaults:
+  run:
+    working-directory: backend
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    environment:
+      name: production
+      url: ${{ vars.PROD_URL }}
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # necesario para resolver tags
+
+      - name: Resolver ref a SHA
+        id: sha
+        env:
+          REF: ${{ inputs.ref }}   # por env, no interpolado en el script (evita inyección)
+        run: |
+          SHA="$(git rev-parse --verify "${REF}^{commit}")"
+          echo "sha=$SHA" >> "$GITHUB_OUTPUT"
+          echo "Restaurando ${REF} → $SHA"
+
+      - name: Disparar despliegue de esa versión
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: curl -fsS -X POST "${RENDER_DEPLOY_HOOK_URL}&ref=${{ steps.sha.outputs.sha }}" -o /dev/null
+
+      - name: Esperar a que Render sirva esa versión
+        env:
+          PROD_URL: ${{ vars.PROD_URL }}
+        run: bash scripts/ci/wait-for-deploy.sh "$PROD_URL" "${{ steps.sha.outputs.sha }}" 900
+
+      - name: Smoke test
+        env:
+          PROD_URL: ${{ vars.PROD_URL }}
+          CORS_TEST_ORIGIN: ${{ vars.CORS_TEST_ORIGIN }}
+          SMOKE_MAX_MS: '5000'
+        run: bash scripts/ci/smoke-test.sh "$PROD_URL" "$CORS_TEST_ORIGIN"
