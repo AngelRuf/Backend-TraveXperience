@@ -36,9 +36,20 @@ const getNearbyPlaces = async (req, res, next) => {
 
     let places, maxDistance;
     try {
-      ({ places, maxDistance } = await geoService.findNearbyPlaces({ lat, lng, radius, category, limit, destination }));
-    } catch (geoError) {
-      throw new AppError(geoError.message, 400);
+      maxDistance = radius ? Number(radius) : 5000;
+      
+      // Consulta directa a MongoDB usando el índice geoespacial 2dsphere
+      places = await Place.find({
+        location: {
+          $near: {
+            $geometry: { type: 'Point', coordinates: [Number(lng), Number(lat)] },
+            $maxDistance: maxDistance
+          }
+        }
+      }).limit(limit ? Number(limit) : 20);
+
+    } catch (error) {
+      throw new AppError('Error al consultar lugares cercanos en la base de datos.', 500);
     }
 
     // Log de actividad (no bloqueante) para alimentar el motor de ML
