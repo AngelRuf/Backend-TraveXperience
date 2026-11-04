@@ -61,10 +61,16 @@ const hotelSchema = new Schema(
       type: String,
     },
     images: [{ type: String }],
-    // Referencia cruda de Google Places (si la foto se auto-asignó al crear
-    // el hotel). Las URLs públicas ya resueltas van en `images`/`mainImage`.
-    photoReference: {
+    // Atribución de la imagen y origen del registro (ver Place.js).
+    imageCredit: {
+      author: { type: String },
+      license: { type: String },
+      sourceUrl: { type: String },
+    },
+    source: {
       type: String,
+      enum: ['manual', 'osm', 'commons'],
+      default: 'manual',
     },
     amenities: [{ type: String }], // ej. wifi, alberca, desayuno, estacionamiento
     rooms: [roomSchema],

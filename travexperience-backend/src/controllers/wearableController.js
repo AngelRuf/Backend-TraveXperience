@@ -194,36 +194,26 @@ const getAlerts = async (req, res, next) => {
  */
 const getActiveItinerary = async (req, res, next) => {
   try {
-    const today = new Date().toISOString().slice(0, 10);
-
+    // Buscamos el último itinerario que no sea borrador ni cancelado
     const itinerary = await Itinerary.findOne({
-      where: { userId: req.user.id },
+      where: { 
+        userId: req.user.id,
+        status: ['confirmado', 'en_curso'] // Aceptamos ambos estados
+      },
       order: [['startDate', 'DESC']],
     });
 
-    // Se filtra en memoria por rango de fechas + estado, ya que Sequelize
-    // con operadores Op.lte/Op.gte requeriría importar Op solo para esto;
-    // dado el bajo volumen de itinerarios por usuario, es aceptable.
-    const active =
-      itinerary &&
-      itinerary.startDate <= today &&
-      itinerary.endDate >= today &&
-      ['confirmado', 'en_curso'].includes(itinerary.status);
-
-    if (!active) {
+    if (!itinerary) {
       return ApiResponse.success(res, 200, 'No hay itinerario activo.', { itinerary: null });
     }
 
-    const todaysDetails = Array.isArray(itinerary.itineraryDetails)
-      ? itinerary.itineraryDetails.filter((day) => day.date === today)
-      : [];
-
+    // Enviamos el itinerario completo al reloj para que el mapeo funcione
     return ApiResponse.success(res, 200, 'Itinerario activo obtenido.', {
       itinerary: {
         id: itinerary.id,
         title: itinerary.title,
         destination: itinerary.destination,
-        today: todaysDetails,
+        itineraryDetails: itinerary.itineraryDetails, // Enviamos la lista completa de días
       },
     });
   } catch (error) {

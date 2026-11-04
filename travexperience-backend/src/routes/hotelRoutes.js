@@ -13,6 +13,7 @@ const hotelController = require('../controllers/hotelController');
 const { protect, authorize } = require('../middlewares/authMiddleware');
 const validateRequest = require('../middlewares/validateRequest');
 const { hotelsUpload } = require('../utils/upload');
+const { publicCatalog } = require('../middlewares/cacheControl');
 
 const roomValidator = body('rooms')
   .optional()
@@ -31,6 +32,7 @@ router.get(
 
 router.get(
   '/nearby',
+  publicCatalog,
   [
     query('lat').isFloat({ min: -90, max: 90 }).withMessage('Latitud inválida.'),
     query('lng').isFloat({ min: -180, max: 180 }).withMessage('Longitud inválida.'),

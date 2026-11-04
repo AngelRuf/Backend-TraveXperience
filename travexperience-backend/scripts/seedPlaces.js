@@ -11,12 +11,9 @@
  *   1) Para cada lugar en `samplePlaces`, hace upsert por (name,
  *      municipality) — si ya existe, lo deja intacto; si no existe, lo
  *      crea. Nunca borra lugares que no estén en esta lista.
- *   2) Recorre TODOS los lugares de la base que no tengan imagen
- *      (`images` vacío o inexistente) — no solo los de esta lista — y
- *      les intenta poner una foto real de Google Places, con una imagen
- *      de respaldo (fallback) si Google no la tiene. Así puedes volver a
- *      correr este script cuantas veces quieras solo para "arreglar
- *      imágenes" sin arriesgar el resto del catálogo.
+ *   2) NO asigna imágenes: los lugares quedan con `images: []` y el
+ *      frontend muestra una imagen de respaldo. Para fotos libres corre
+ *      `node scripts/enrichPlaces.js` (Wikimedia Commons).
  *
  * 📍 Cobertura (81 lugares):
  *   - Xicotepec: 20
@@ -30,7 +27,7 @@
  * Nota sobre coordenadas: son aproximadas (estimadas alrededor del
  * centro de cada localidad) y suficientes para pruebas del feature de
  * geoposicionamiento. Si necesitas precisión real para producción,
- * conviene verificarlas contra Google Places / OSM antes de usarlas
+ * conviene verificarlas contra OpenStreetMap antes de usarlas
  * fuera de un entorno de pruebas.
  *
  * Uso:
@@ -41,18 +38,7 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const Place = require('../src/models/mongodb/Place');
-const googleMapsService = require('../src/services/googleMapsService');
 const logger = require('../src/utils/logger');
-
-// Base pública de la API para armar las URLs del proxy de fotos
-// (GET /maps/photo?ref=...). Ajusta API_PUBLIC_URL en .env si tu servidor
-// corre en otro puerto/dominio; por defecto asume desarrollo local.
-const API_PUBLIC_URL = process.env.API_PUBLIC_URL || 'http://10.91.20.6:4000/api/v1';
-
-const sleep = (ms) => new Promise((resolve) => { setTimeout(resolve, ms); });
-
-const buildFallbackImageUrl = (place) =>
-  googleMapsService.buildFallbackImageUrl(`${place.name} ${place.municipality} Puebla turismo`);
 
 // Coordenadas aproximadas: [lng, lat]
 const samplePlaces = [
@@ -902,192 +888,12 @@ const upsertSamplePlaces = async () => {
   );
 };
 
-/**
- * Recorre TODOS los lugares de la base (no solo los de samplePlaces) que
- * no tengan imagen y les intenta poner una foto real de Google Places,
- * con una imagen de respaldo si Google no la tiene. Por eso es seguro
- * volver a correr este script exclusivamente para "arreglar imágenes":
- * nunca borra ni duplica lugares, y a los que ya tienen imagen no los toca.
- */
-const backfillMissingImages = async () => {
-  const placesWithoutImage = await Place.find({
-    $or: [{ images: { $exists: false } }, { images: { $size: 0 } }],
-  });
-
-  logger.info(`🔍 ${placesWithoutImage.length} lugares sin imagen en toda la base. Buscando fotos...`);
-
-  let withPhoto = 0;
-  for (const place of placesWithoutImage) {
-    try {
-      const photoReference = await googleMapsService.findPlacePhotoReference(
-        `${place.name}, ${place.address || place.municipality}`
-      );
-      if (photoReference) {
-        const photoUrl = googleMapsService.buildPhotoProxyUrl(API_PUBLIC_URL, photoReference);
-        await Place.updateOne({ _id: place._id }, { photoReference, images: [photoUrl] });
-        withPhoto += 1;
-      } else {
-        // Nunca dejamos un lugar sin imagen: si Google no la tiene, usamos fallback.
-        const fallbackImage = buildFallbackImageUrl(place);
-        await Place.updateOne({ _id: place._id }, { images: [fallbackImage] });
-      }
-    } catch (photoError) {
-      logger.warn(`Sin foto automática para "${place.name}": ${photoError.message}. Usando fallback.`);
-      const fallbackImage = buildFallbackImageUrl(place);
-      await Place.updateOne({ _id: place._id }, { images: [fallbackImage] });
-    }
-    await sleep(200); // pequeño respiro entre llamadas a la API de Google
-  }
-
-  logger.info(
-    `🖼️  ${withPhoto}/${placesWithoutImage.length} lugares quedaron con foto automática de Google Places (el resto usa imagen de respaldo).`
-  );
-};
-
-/**
- * Consulta el endpoint "Find Place From Text" de Google Places para obtener
- * las coordenadas reales de un lugar a partir de su nombre y dirección.
- * Es independiente de googleMapsService (que ya usa este script para fotos)
- * para no depender de sus métodos internos; si tu proyecto ya expone un
- * helper equivalente en services/googleMapsService.js, puedes sustituir
- * esta función por una llamada a ese helper.
- *
- * Requiere una API key de Google Maps/Places con el endpoint "Places API"
- * habilitado. Ajusta el nombre de la variable de entorno si en tu .env se
- * llama distinto (ej. GOOGLE_PLACES_API_KEY).
- */
-const findRealCoordinates = async (query) => {
-  const apiKey = process.env.GOOGLE_MAPS_API_KEY || process.env.GOOGLE_PLACES_API_KEY;
-  if (!apiKey) {
-    logger.warn('⚠️  No hay GOOGLE_MAPS_API_KEY/GOOGLE_PLACES_API_KEY configurada; se omite la geocodificación.');
-    return null;
-  }
-
-  const url =
-    'https://maps.googleapis.com/maps/api/place/findplacefromtext/json' +
-    `?input=${encodeURIComponent(query)}` +
-    '&inputtype=textquery' +
-    '&fields=geometry,name,formatted_address' +
-    `&key=${apiKey}`;
-
-  const response = await fetch(url, { signal: AbortSignal.timeout(8000) });
-  const data = await response.json();
-
-  if (data.status === 'OK' && data.candidates && data.candidates.length > 0) {
-    const candidate = data.candidates[0];
-    return {
-      lat: candidate.geometry.location.lat,
-      lng: candidate.geometry.location.lng,
-      matchedName: candidate.name,
-      matchedAddress: candidate.formatted_address,
-    };
-  }
-
-  return null; // Sin match real en Google (lugar inventado/genérico o nombre poco específico)
-};
-
-// Radio máximo (km) que aceptamos entre la coordenada aproximada que
-// pusimos a mano en `samplePlaces` y el match que devuelve Google. Nombres
-// genéricos ("Parque Juárez", "Zona de Pesca"...) existen en muchos pueblos
-// de México; si Google matchea uno lejano, es casi seguro que es el lugar
-// equivocado y NO queremos que eso mueva silenciosamente el punto fuera de
-// la Sierra Norte (rompería las búsquedas $near de "Cerca de mí").
-const MAX_MATCH_DISTANCE_KM = 15;
-
-const haversineKm = ([lng1, lat1], [lng2, lat2]) => {
-  const toRad = (deg) => (deg * Math.PI) / 180;
-  const R = 6371;
-  const dLat = toRad(lat2 - lat1);
-  const dLng = toRad(lng2 - lng1);
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
-  return 2 * R * Math.asin(Math.sqrt(a));
-};
-
-/**
- * Recorre los lugares del catálogo (samplePlaces) que TODAVÍA no tengan
- * `locationVerified: true` y, cuando Google encuentra un match real para
- * "nombre + dirección/municipio", sobreescribe la coordenada estimada por
- * la coordenada real — pero solo si el match cae dentro de
- * MAX_MATCH_DISTANCE_KM de la coordenada aproximada original; si Google
- * matchea algo demasiado lejos, se descarta y se reporta para revisión
- * manual en vez de aplicarse a ciegas.
- *
- * Es idempotente: una vez que un lugar queda `locationVerified: true` (con
- * match aceptado) ya no se vuelve a consultar en corridas futuras, así no
- * se gasta cuota de más ni se arriesga a pisar una corrección manual hecha
- * directo en la base (para forzar una nueva verificación, hay que resetear
- * `locationVerified` a false a mano).
- */
-const refineLocationsWithGoogle = async () => {
-  let updated = 0;
-  const unmatched = [];
-  const rejectedByDistance = [];
-  let skippedAlreadyVerified = 0;
-
-  for (const place of samplePlaces) {
-    const existing = await Place.findOne(
-      { name: place.name, municipality: place.municipality },
-      { locationVerified: 1 }
-    );
-    if (existing?.locationVerified) {
-      skippedAlreadyVerified += 1;
-      continue;
-    }
-
-    const query = `${place.name}, ${place.address || place.municipality + ', Puebla'}`;
-    try {
-      const match = await findRealCoordinates(query);
-      if (match) {
-        const distanceKm = haversineKm(place.location.coordinates, [match.lng, match.lat]);
-        if (distanceKm > MAX_MATCH_DISTANCE_KM) {
-          rejectedByDistance.push(
-            `${place.name} (${place.municipality}) — match a ${distanceKm.toFixed(1)} km: "${match.matchedName}", ${match.matchedAddress}`
-          );
-        } else {
-          await Place.updateOne(
-            { name: place.name, municipality: place.municipality },
-            {
-              location: { type: 'Point', coordinates: [match.lng, match.lat] },
-              locationVerified: true,
-            }
-          );
-          updated += 1;
-        }
-      } else {
-        unmatched.push(`${place.name} (${place.municipality})`);
-      }
-    } catch (geoError) {
-      logger.warn(`No se pudo geocodificar "${place.name}": ${geoError.message}`);
-      unmatched.push(`${place.name} (${place.municipality})`);
-    }
-    await sleep(200); // respetar límites de la API
-  }
-
-  logger.info(
-    `📍 ${updated} coordenadas actualizadas con datos reales de Google Places, ${skippedAlreadyVerified} ya estaban verificadas y no se tocaron.`
-  );
-  if (rejectedByDistance.length > 0) {
-    logger.warn(
-      `⚠️  ${rejectedByDistance.length} matches de Google descartados por estar a más de ${MAX_MATCH_DISTANCE_KM} km (probable lugar equivocado, se dejó la coordenada aproximada):\n   - ${rejectedByDistance.join('\n   - ')}`
-    );
-  }
-  if (unmatched.length > 0) {
-    logger.info(
-      `ℹ️  ${unmatched.length} lugares sin match real en Google (probablemente nombres genéricos o poco específicos), se dejó la coordenada aproximada:\n   - ${unmatched.join('\n   - ')}`
-    );
-  }
-};
-
 const seed = async () => {
   try {
     await mongoose.connect(process.env.MONGO_URI);
     logger.info('Conectado a MongoDB para siembra de datos.');
 
     await upsertSamplePlaces();
-    await refineLocationsWithGoogle();
-    await backfillMissingImages();
 
     const totalPlaces = await Place.countDocuments({
       municipality: { $in: ['Xicotepec', 'Necaxa', 'Huauchinango', 'Tenango de las Flores'] },

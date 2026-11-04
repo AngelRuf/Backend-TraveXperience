@@ -15,11 +15,12 @@ const Place = require('../models/mongodb/Place');
 const Favorite = require('../models/mongodb/Favorite');
 const ActivityLog = require('../models/mongodb/ActivityLog');
 const geoService = require('../services/geoService');
-const googleMapsService = require('../services/googleMapsService');
+const geocodingService = require('../services/geocodingService');
 const AppError = require('../utils/AppError');
 const ApiResponse = require('../utils/apiResponse');
 const logger = require('../utils/logger');
 const { toPublicUrl } = require('../utils/upload');
+const { withNormalizedImages } = require('../utils/mediaUrls');
 
 /**
  * GET /local/nearby
@@ -50,9 +51,12 @@ const getNearbyPlaces = async (req, res, next) => {
       /* no se interrumpe la respuesta principal si el log falla */
     });
 
-    let placesWithFavorites = places;
+    // images siempre es un array (si no hay foto: []) y https en producción.
+    const normalizedPlaces = places.map(withNormalizedImages);
+
+    let placesWithFavorites = normalizedPlaces;
     if (req.user?.id) {
-      const placeObjects = places.map((place) => (typeof place.toObject === 'function' ? place.toObject() : place));
+      const placeObjects = normalizedPlaces;
       const placeIds = placeObjects.map((place) => place._id);
       const favorites = await Favorite.find({
         userId: req.user.id,
@@ -151,7 +155,7 @@ const getPlaceById = async (req, res, next) => {
       place.favoriteId = favorite?._id || null;
     }
 
-    return ApiResponse.success(res, 200, 'Detalle del lugar obtenido.', { place });
+    return ApiResponse.success(res, 200, 'Detalle del lugar obtenido.', { place: withNormalizedImages(place) });
   } catch (error) {
     return next(error);
   }
@@ -202,7 +206,7 @@ const updatePlace = async (req, res, next) => {
  * POST /local/places
  * Solo administradores. Registra un lugar/hotel en el catálogo. Si no se
  * envían coordenadas ("lat"/"lng") pero sí "address", geocodifica
- * automáticamente con Google Maps antes de guardar.
+ * automáticamente con Nominatim (OSM) antes de guardar.
  */
 const createPlace = async (req, res, next) => {
   try {
@@ -215,7 +219,7 @@ const createPlace = async (req, res, next) => {
       }
 
       try {
-        const geocoded = await googleMapsService.geocodeAddress(address);
+        const geocoded = await geocodingService.geocodeAddress(address);
         lat = geocoded.lat;
         lng = geocoded.lng;
       } catch (geoError) {
@@ -226,30 +230,9 @@ const createPlace = async (req, res, next) => {
       }
     }
 
-    // Si el admin no subió ninguna imagen, intentamos localizar una foto
-    // real del lugar en Google Places. Es "best effort": si Google no lo
-    // tiene indexado o falla el servicio, el lugar se crea igual sin foto.
-    let finalImages = images;
-    let photoReference = null;
-    if ((!images || images.length === 0)) {
-      try {
-        photoReference = await googleMapsService.findPlacePhotoReference(
-          `${name}, ${address || municipality || 'Xicotepec, Puebla'}`
-        );
-        if (photoReference) {
-          const apiBaseUrl = `${req.protocol}://${req.get('host')}/api/v1`;
-          finalImages = [googleMapsService.buildPhotoProxyUrl(apiBaseUrl, photoReference)];
-        }
-      } catch (photoError) {
-        logger.warn(`No se pudo auto-asignar foto para "${name}": ${photoError.message}`);
-      }
-
-      if (!finalImages || finalImages.length === 0) {
-        finalImages = [
-          googleMapsService.buildFallbackImageUrl(`${name} ${address || municipality || 'Xicotepec Puebla'}`),
-        ];
-      }
-    }
+    // Sin imágenes => images: [] (el frontend muestra una imagen de respaldo).
+    // Para fotos libres corre scripts/enrichPlaces.js.
+    const finalImages = Array.isArray(images) ? images : [];
 
     let place;
     try {
@@ -261,7 +244,7 @@ const createPlace = async (req, res, next) => {
         municipality,
         location: { type: 'Point', coordinates: [Number(lng), Number(lat)] },
         images: finalImages,
-        photoReference,
+        source: 'manual',
         tags,
         priceLevel,
       });

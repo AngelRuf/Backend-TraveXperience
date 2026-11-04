@@ -7,7 +7,7 @@
  */
 
 const weatherService = require('../services/weatherService');
-const googleMapsService = require('../services/googleMapsService');
+const geocodingService = require('../services/geocodingService');
 const AppError = require('../utils/AppError');
 const ApiResponse = require('../utils/apiResponse');
 
@@ -26,7 +26,7 @@ const getWeather = async (req, res, next) => {
 
     if ((lat === undefined || lng === undefined) && destination) {
       try {
-        const geocoded = await googleMapsService.geocodeAddress(destination);
+        const geocoded = await geocodingService.geocodeAddress(destination);
         lat = geocoded.lat;
         lng = geocoded.lng;
       } catch (geoError) {

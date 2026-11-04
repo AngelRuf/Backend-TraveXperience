@@ -14,9 +14,11 @@ const Place = require('../models/mongodb/Place');
 const { protect, optionalAuth, authorize } = require('../middlewares/authMiddleware');
 const validateRequest = require('../middlewares/validateRequest');
 const { placesUpload } = require('../utils/upload');
+const { publicCatalog } = require('../middlewares/cacheControl');
 
 router.get(
   '/nearby',
+  publicCatalog,
   optionalAuth,
   [
     query('lat').isFloat({ min: -90, max: 90 }).withMessage('Latitud inválida.'),
@@ -28,7 +30,7 @@ router.get(
   localTourismController.getNearbyPlaces
 );
 
-router.get('/categories', localTourismController.getCategories);
+router.get('/categories', publicCatalog, localTourismController.getCategories);
 
 // Listado general paginado (sin lat/lng), para poblar la tabla del panel de Admin.
 router.get(

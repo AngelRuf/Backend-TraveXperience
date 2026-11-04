@@ -1,13 +1,6 @@
+const fs = require('fs');
+const path = require('path');
 const multer = require('multer');
-const cloudinary = require('cloudinary').v2;
-const { CloudinaryStorage } = require('multer-storage-cloudinary');
-
-// Configuración de Cloudinary con variables de entorno
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET
-});
 
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
 
@@ -20,17 +13,24 @@ const imageFileFilter = (_req, file, cb) => {
 };
 
 /**
- * Crea una instancia de multer con almacenamiento en Cloudinary dentro de
- * la carpeta `travexperience-<subfolder>`. Permite reusar el mismo filtro/límite 
- * de tamaño para distintos recursos (perfiles, lugares, hoteles) sin repetir código.
+ * Crea una instancia de multer con almacenamiento en disco dentro de
+ * `uploads/<subfolder>`. Permite reusar el mismo filtro/límite de tamaño
+ * para distintos recursos (perfiles, lugares, hoteles) sin repetir código.
  */
 const createUploader = (subfolder) => {
-  const storage = new CloudinaryStorage({
-    cloudinary: cloudinary,
-    params: {
-      folder: `travexperience-${subfolder}`,
-      allowed_formats: ['jpg', 'png', 'jpeg', 'webp', 'gif'],
-    }
+  const uploadDir = path.resolve(__dirname, '../../uploads', subfolder);
+
+  if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+  }
+
+  const storage = multer.diskStorage({
+    destination: (_req, _file, cb) => cb(null, uploadDir),
+    filename: (_req, file, cb) => {
+      const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
+      const extension = path.extname(file.originalname) || '.jpg';
+      cb(null, `${file.fieldname}-${uniqueSuffix}${extension}`);
+    },
   });
 
   return multer({
@@ -45,14 +45,10 @@ const upload = createUploader('profiles'); // foto de perfil / avatar
 const placesUpload = createUploader('places');
 const hotelsUpload = createUploader('hotels');
 
-/**
- * En la versión de almacenamiento en disco, esta función convertía la ruta 
- * absoluta en una ruta relativa pública. 
- * Con Cloudinary, req.file.path ya es una URL pública segura (https://res...), 
- * así que simplemente retornamos la misma ruta para no romper los controladores.
- */
 const toPublicUrl = (filePath) => {
-  return filePath;
+  const projectRoot = path.resolve(__dirname, '../..');
+  const relativePath = path.relative(projectRoot, filePath).split(path.sep).join('/');
+  return `/${relativePath}`;
 };
 
-module.exports = { upload, placesUpload, hotelsUpload, createUploader, toPublicUrl }; 
+module.exports = { upload, placesUpload, hotelsUpload, createUploader, toPublicUrl };

@@ -23,7 +23,7 @@ const cron = require('node-cron');
 const { Op } = require('sequelize');
 
 const Itinerary = require('../../models/mysql/Itinerary');
-const googleMapsService = require('../../services/googleMapsService');
+const geocodingService = require('../../services/geocodingService');
 const weatherService = require('../../services/weatherService');
 const logger = require('../../utils/logger');
 
@@ -57,7 +57,7 @@ const broadcastWeatherForActiveItineraries = async (io) => {
       let weather = destinationsCache.get(itinerary.destination);
 
       if (!weather) {
-        const { lat, lng } = await googleMapsService.geocodeAddress(itinerary.destination);
+        const { lat, lng } = await geocodingService.geocodeAddress(itinerary.destination);
         weather = await weatherService.getWeatherByCoords(lat, lng);
         destinationsCache.set(itinerary.destination, weather);
       }

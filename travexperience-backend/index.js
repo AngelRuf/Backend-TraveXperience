@@ -25,6 +25,7 @@ const http = require('http');
 const { Server } = require('socket.io');
 
 const app = require('./src/app');
+const { corsOptions } = require('./src/config/cors');
 const { connectMySQL } = require('./src/config/mysql');
 const { connectMongoDB } = require('./src/config/mongodb');
 const aiService = require('./src/services/aiService');
@@ -45,15 +46,12 @@ const startServer = async () => {
     const server = http.createServer(app);
 
     const io = new Server(server, {
-      cors: { 
-        origin: process.env.FRONTEND_PUBLIC_URL,
-        methods: ["GET", "POST"]
-      }, 
+      cors: { origin: corsOptions.origin, methods: ['GET', 'POST'] }, // mismos orígenes que la API (CORS_ORIGINS)
     });
 
     initSockets(io);
 
-    server.listen(PORT, '0.0.0.0', () => {
+    server.listen(PORT, () => {
       logger.info(`🚀 TraveXperience API + sockets corriendo en el puerto ${PORT} (${process.env.NODE_ENV})`);
     });
 

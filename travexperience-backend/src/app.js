@@ -21,8 +21,14 @@ const path = require('path');
 const apiRoutes = require('./routes');
 const { notFound, errorHandler } = require('./middlewares/errorHandler');
 const logger = require('./utils/logger');
+const { corsOptions } = require('./config/cors');
+const { noStore } = require('./middlewares/cacheControl');
 
 const app = express();
+
+// Render (y cualquier PaaS) termina TLS en un proxy: sin esto req.protocol
+// sería "http" y req.ip la IP del proxy. 1 = confiar solo en el primer salto.
+app.set('trust proxy', 1);
 
 // --- Seguridad y utilidades base -----------------------------------------
 app.use(
@@ -30,13 +36,24 @@ app.use(
     crossOriginResourcePolicy: false,
   })
 );
-// Configuración de CORS dinámica
-app.use(cors({
-  origin: process.env.FRONTEND_PUBLIC_URL || 'http://localhost:5173', // Usa la variable en Render, o localhost para desarrollo
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-  credentials: true // Crucial si manejas cookies de sesión o tokens JWT en headers específicos
-}));; // Habilita CORS (ajustar origin en producción)
-app.use(compression()); // Comprime las respuestas (clave para el consumo del wearable)
+app.use(cors(corsOptions)); // Orígenes desde CORS_ORIGINS (ver src/config/cors.js)
+app.use(compression()); // gzip/deflate (clave para la PWA y el wearable)
+
+// Health check liviano (sin base de datos) para el ping de Render y monitoreo.
+app.get('/health', noStore, (req, res) => res.status(200).json({ ok: true }));
+
+// Versión desplegada: el pipeline la consulta para confirmar que Render ya
+// sirve el commit liberado. RENDER_GIT_COMMIT lo define Render automáticamente.
+const pkg = require('../package.json');
+app.get('/version', noStore, (req, res) =>
+  res.status(200).json({
+    name: pkg.name,
+    version: pkg.version,
+    commit: process.env.RENDER_GIT_COMMIT || process.env.GIT_COMMIT || 'unknown',
+    environment: process.env.NODE_ENV || 'development',
+    uptimeSeconds: Math.round(process.uptime()),
+  })
+);
 
 // El webhook de Stripe necesita el body CRUDO (sin parsear) para poder
 // verificar la firma con stripe.webhooks.constructEvent(). Por eso este
@@ -46,7 +63,19 @@ app.use('/api/v1/payments/webhook', express.raw({ type: 'application/json' }));
 
 app.use(express.json({ limit: '2mb' })); // Parseo de JSON en el body
 app.use(express.urlencoded({ extended: true }));
-app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads')));
+// Archivos subidos (fotos de lugares/hoteles/perfiles). Los nombres llevan
+// timestamp único, así que se pueden cachear 30 días. ACAO "*" permite que el
+// Service Worker de la PWA los guarde para uso sin conexión.
+app.use(
+  '/uploads',
+  express.static(path.join(__dirname, '..', 'uploads'), {
+    maxAge: '30d',
+    setHeaders: (res) => {
+      res.set('Cache-Control', 'public, max-age=2592000');
+      res.set('Access-Control-Allow-Origin', '*');
+    },
+  })
+);
 
 // --- Logging HTTP ----------------------------------------------------------
 if (process.env.NODE_ENV === 'development') {
@@ -56,7 +85,9 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 // --- Rutas principales de la API -------------------------------------------
-app.use('/api/v1', apiRoutes);
+// Por defecto NADA de la API se cachea; los GET públicos de catálogo lo
+// reactivan explícitamente con publicCatalog (ver cacheControl.js).
+app.use('/api/v1', noStore, apiRoutes);
 
 // Ruta raíz informativa
 app.get('/', (req, res) => {

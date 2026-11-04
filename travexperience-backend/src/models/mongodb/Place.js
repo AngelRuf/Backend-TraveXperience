@@ -64,18 +64,26 @@ const placeSchema = new Schema(
         required: true,
       },
     },
+    // Formato que consume el frontend: array de strings (URL absoluta o
+    // ruta relativa "/uploads/..."). Si no hay imagen, queda [].
     images: [{ type: String }],
-    // Referencia cruda de Google Places (si la foto se auto-asignó al crear
-    // el lugar). Las URLs públicas ya resueltas van en `images`; este campo
-    // solo se guarda por si en el futuro se necesita refrescar/regenerar la foto.
-    photoReference: {
-      type: String,
+    // Atribución de la imagen (obligatoria para fotos de Wikimedia Commons).
+    imageCredit: {
+      author: { type: String },
+      license: { type: String },
+      sourceUrl: { type: String },
     },
-    // true cuando `location` ya fue contrastada contra un match real de
-    // Google Places (ver scripts/seedPlaces.js -> refineLocationsWithGoogle).
-    // Evita volver a gastar cuota / arriesgar un mal match en corridas
-    // posteriores del script, y permite que un admin marque manualmente
-    // como verificada una coordenada corregida a mano.
+    // Origen del registro: 'manual' (admin), 'osm' (importOsmPlaces),
+    // 'commons' (reservado para registros creados desde Commons).
+    source: {
+      type: String,
+      enum: ['manual', 'osm', 'commons'],
+      default: 'manual',
+      index: true,
+    },
+    // ID del elemento en OpenStreetMap (ej. "node/123"); evita duplicar al re-importar.
+    osmId: { type: String, index: true, sparse: true },
+    // true cuando `location` fue verificada a mano por un admin.
     locationVerified: {
       type: Boolean,
       default: false,

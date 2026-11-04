@@ -7,29 +7,44 @@
  *
  * Sigue el mismo patrón que localTourismController.createPlace: si el
  * admin no manda lat/lng pero sí una dirección de texto, se geocodifica
- * automáticamente con Google Maps antes de guardar.
+ * automáticamente con Nominatim (OSM) antes de guardar.
  * -----------------------------------------------------------------------
  */
 
 const Hotel = require('../models/mongodb/Hotel');
 const Favorite = require('../models/mongodb/Favorite');
 const ActivityLog = require('../models/mongodb/ActivityLog');
-const googleMapsService = require('../services/googleMapsService');
+const geocodingService = require('../services/geocodingService');
 const AppError = require('../utils/AppError');
 const ApiResponse = require('../utils/apiResponse');
 const logger = require('../utils/logger');
 const { toPublicUrl } = require('../utils/upload');
+const { withNormalizedImages } = require('../utils/mediaUrls');
 
 const DEFAULT_RADIUS_METERS = 10000;
 const MAX_RADIUS_METERS = 50000;
 
-/** Verifica que el hotel exista y pertenezca al admin autenticado. */
+/**
+ * Verifica que el hotel exista y que el usuario autenticado tenga permiso
+ * para modificarlo: o bien es el dueño original (mismo ownerId), o bien
+ * tiene rol "administrador" (los administradores pueden gestionar
+ * cualquier hotel del catálogo, no solo los que ellos mismos crearon).
+ *
+ * Se compara con String(...) en ambos lados porque ownerId puede venir
+ * como Number en Mongo mientras que user.id (payload del JWT) puede venir
+ * como Number o String según cómo se firmó el token — comparar con !==
+ * a secas puede dar falsos "no es el dueño" por un simple mismatch de tipo.
+ */
 const findOwnedHotel = async (id, user) => {
   const hotel = await Hotel.findById(id);
   if (!hotel) {
     throw new AppError('Hotel no encontrado.', 404);
   }
-  if (hotel.ownerId !== user.id) {
+
+  const isOwner = String(hotel.ownerId) === String(user.id);
+  const isAdmin = user.role === 'administrador';
+
+  if (!isOwner && !isAdmin) {
     throw new AppError('No tienes permiso para modificar este hotel.', 403);
   }
   return hotel;
@@ -104,7 +119,7 @@ const getNearbyHotels = async (req, res, next) => {
     return ApiResponse.success(res, 200, 'Hoteles cercanos obtenidos.', {
       count: hotels.length,
       radiusMeters: maxDistance,
-      hotels,
+      hotels: hotels.map(withNormalizedImages),
     });
   } catch (error) {
     return next(error);
@@ -140,7 +155,7 @@ const getHotelById = async (req, res, next) => {
       hotel.favoriteId = favorite?._id || null;
     }
 
-    return ApiResponse.success(res, 200, 'Detalle del hotel obtenido.', { hotel });
+    return ApiResponse.success(res, 200, 'Detalle del hotel obtenido.', { hotel: withNormalizedImages(hotel) });
   } catch (error) {
     return next(error);
   }
@@ -148,7 +163,7 @@ const getHotelById = async (req, res, next) => {
 
 /**
  * POST /hotels
- * Solo administradores. Si no se envían lat/lng pero sí address, geocodifica con Google Maps.
+ * Solo administradores. Si no se envían lat/lng pero sí address, geocodifica con Nominatim (OSM).
  */
 const createHotel = async (req, res, next) => {
   try {
@@ -163,7 +178,7 @@ const createHotel = async (req, res, next) => {
         throw new AppError('Se requieren coordenadas ("lat"/"lng") o una "address" para geocodificar.', 422);
       }
       try {
-        const geocoded = await googleMapsService.geocodeAddress(address);
+        const geocoded = await geocodingService.geocodeAddress(address);
         lat = geocoded.lat;
         lng = geocoded.lng;
       } catch (geoError) {
@@ -174,32 +189,9 @@ const createHotel = async (req, res, next) => {
       }
     }
 
-    // Igual que en localTourismController.createPlace: si no hay imágenes,
-    // se intenta localizar una foto real en Google Places (best effort).
-    let finalMainImage = mainImage;
-    let finalImages = images;
-    let photoReference = null;
-    if (!mainImage && (!images || images.length === 0)) {
-      try {
-        photoReference = await googleMapsService.findPlacePhotoReference(
-          `${name}, ${address || municipality || 'Xicotepec, Puebla'}`
-        );
-        if (photoReference) {
-          const apiBaseUrl = `${req.protocol}://${req.get('host')}/api/v1`;
-          const photoUrl = googleMapsService.buildPhotoProxyUrl(apiBaseUrl, photoReference);
-          finalMainImage = photoUrl;
-          finalImages = [photoUrl];
-        }
-      } catch (photoError) {
-        logger.warn(`No se pudo auto-asignar foto para el hotel "${name}": ${photoError.message}`);
-      }
-
-      if (!finalMainImage && (!finalImages || finalImages.length === 0)) {
-        const fallbackImage = googleMapsService.buildFallbackImageUrl(`${name} ${address || municipality || 'Xicotepec Puebla'}`);
-        finalMainImage = fallbackImage;
-        finalImages = [fallbackImage];
-      }
-    }
+    // Sin imágenes => images: [] (el frontend muestra una imagen de respaldo).
+    const finalMainImage = mainImage || undefined;
+    const finalImages = Array.isArray(images) ? images : [];
 
     const hotel = await Hotel.create({
       name,
@@ -210,7 +202,7 @@ const createHotel = async (req, res, next) => {
       location: { type: 'Point', coordinates: [Number(lng), Number(lat)] },
       mainImage: finalMainImage,
       images: finalImages,
-      photoReference,
+      source: 'manual',
       amenities,
       rooms,
       ownerId: req.user.id,
@@ -224,7 +216,8 @@ const createHotel = async (req, res, next) => {
 
 /**
  * PUT /hotels/:id
- * Solo el administrador dueño del hotel puede editarlo.
+ * El administrador dueño del hotel, o cualquier usuario con rol
+ * "administrador", puede editarlo (ver findOwnedHotel).
  */
 const updateHotel = async (req, res, next) => {
   try {
@@ -267,7 +260,8 @@ const deleteHotel = async (req, res, next) => {
 
 /**
  * POST /hotels/:id/images
- * Solo el administrador dueño del hotel. Multipart/form-data: campo
+ * El administrador dueño del hotel, o cualquier usuario con rol
+ * "administrador" (ver findOwnedHotel). Multipart/form-data: campo
  * "images" (hasta 10, se agregan al arreglo `images`) y opcionalmente
  * "mainImage" (un solo archivo, reemplaza la portada). Responde con el
  * mismo formato que updateHotel.
