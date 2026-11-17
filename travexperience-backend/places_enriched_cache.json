@@ -1,0 +1,992 @@
+{
+  "6a6a9e4ab036cb55ce860ab5": {
+    "done": true,
+    "found": true,
+    "name": "Restaurante Mariscos La Presa",
+    "coordinates": [
+      -98.0340585,
+      20.2070234
+    ],
+    "address": "Autop. México - Tuxpan km 200-199, 43710 Patoltecoya, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad0": {
+    "done": true,
+    "found": true,
+    "name": "Árbol del Príncipe Tacuate",
+    "coordinates": [
+      -97.9909759,
+      20.203477400000004
+    ],
+    "address": "Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae7": {
+    "done": true,
+    "found": true,
+    "name": "Hotel Villa de Cortez",
+    "coordinates": [
+      -98.0521112,
+      20.175418399999998
+    ],
+    "address": "Miguel Hidalgo 3, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac2": {
+    "done": true,
+    "found": true,
+    "name": "Parque Reforma",
+    "coordinates": [
+      -98.0538704,
+      20.1764576
+    ],
+    "address": "Centro, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac9": {
+    "done": true,
+    "found": true,
+    "name": "Capilla de San Miguel Huauchinango",
+    "coordinates": [
+      -98.05301639999999,
+      20.1751874
+    ],
+    "address": "de Centro, Huauchinango, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c3": {
+    "done": true,
+    "found": true,
+    "name": "Plaza de Armas de Huauchinango",
+    "coordinates": [
+      -98.0534338,
+      20.1739462
+    ],
+    "address": "73160 Centro, Bravo 13, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aa5": {
+    "done": true,
+    "found": true,
+    "name": "Templo de la Virgen de Guadalupe de Xicotepec",
+    "coordinates": [
+      -97.95462669999999,
+      20.2863431
+    ],
+    "address": "Col el Tabacal, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab6": {
+    "done": true,
+    "found": true,
+    "name": "Café Central Necaxa",
+    "coordinates": [
+      -98.0038761,
+      20.2114194
+    ],
+    "address": "1º de Mayo 202, centro de, Necaxa, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860acf": {
+    "done": true,
+    "found": true,
+    "name": "Casa de Piedra de Tizoc",
+    "coordinates": [
+      -97.9909759,
+      20.203477400000004
+    ],
+    "address": "Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae1": {
+    "done": true,
+    "found": true,
+    "name": "Restaurante La Choza 1986",
+    "coordinates": [
+      -97.95713040000001,
+      20.2761732
+    ],
+    "address": "Reforma 100, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c2": {
+    "done": true,
+    "found": true,
+    "name": "Mercado de Necaxa",
+    "coordinates": [
+      -98.0038223,
+      20.212036100000002
+    ],
+    "address": "Mateos, Necaxa, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c4": {
+    "done": true,
+    "found": true,
+    "name": "Parroquia de San Juan Bautista de Huauchinango",
+    "coordinates": [
+      -98.0530677,
+      20.1754647
+    ],
+    "address": "Calle 1, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab3": {
+    "done": true,
+    "found": true,
+    "name": "Laguna Tenexcalco",
+    "coordinates": [
+      -98.00799219999999,
+      20.218224199999998
+    ],
+    "address": "73216 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac1": {
+    "done": true,
+    "found": true,
+    "name": "Barrio de Analco",
+    "coordinates": [
+      -98.1936564,
+      19.039457499999997
+    ],
+    "address": "Av 9 Ote 810, Barrio de Analco, 72500 Heroica Puebla de Zaragoza, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ace": {
+    "done": true,
+    "found": true,
+    "name": "Paraje Turístico El Tizoc",
+    "coordinates": [
+      -97.9902031,
+      20.2030709
+    ],
+    "address": "73161, C. División del Sur 93, Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad3": {
+    "done": true,
+    "found": true,
+    "name": "Parroquia de San Juan Bautista de Tenango",
+    "coordinates": [
+      -97.98832360000002,
+      20.2030369
+    ],
+    "address": "Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a72363dbd5913c3997e561e": {
+    "done": true,
+    "found": true,
+    "name": "UTXJ",
+    "coordinates": [
+      -97.9575799,
+      20.237786
+    ],
+    "address": "Av. Universidad Tecnológica No. 1000 Tierra Negra, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860abe": {
+    "done": true,
+    "found": true,
+    "name": "Mirador del Embalse",
+    "coordinates": [
+      -98.00209,
+      20.2121605
+    ],
+    "address": "Pl. Principal, Necaxa, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ade": {
+    "done": true,
+    "found": true,
+    "name": "Cabalgata El Tizoc",
+    "coordinates": [
+      -97.9902031,
+      20.2030709
+    ],
+    "address": "73161, C. División del Sur 93, Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ae0": {
+    "done": true,
+    "found": true,
+    "name": "Iglesia de la Virgen de Guadalupe Tenango",
+    "coordinates": [
+      -97.98832360000002,
+      20.2030369
+    ],
+    "address": "Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae2": {
+    "done": true,
+    "found": true,
+    "name": "Ámame Café Restaurante Carranza",
+    "coordinates": [
+      -97.9630052,
+      20.2646476
+    ],
+    "address": "Blvrd Benito Juárez 264, Col la Rivera, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6bd": {
+    "done": true,
+    "found": true,
+    "name": "Presa de Necaxa",
+    "coordinates": [
+      -98.00050879999999,
+      20.217515600000002
+    ],
+    "address": "Presa de Necaxa, 73214 Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad6": {
+    "done": true,
+    "found": true,
+    "name": "Cerro Chiltipetl",
+    "coordinates": [
+      -97.9926811,
+      20.199577899999998
+    ],
+    "address": "Parador turístico Tizoc, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6ba": {
+    "done": true,
+    "found": true,
+    "name": "Museo Comunitario de Xicotepec",
+    "coordinates": [
+      -97.9714752,
+      20.2679969
+    ],
+    "address": "La Alegría 81, La Esperanza, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c1": {
+    "done": true,
+    "found": true,
+    "name": "Parroquia de San Miguel Arcángel",
+    "coordinates": [
+      -98.0020145,
+      20.212371599999997
+    ],
+    "address": "Morelos, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c9": {
+    "done": true,
+    "found": true,
+    "name": "Feria del Café y la Sierra",
+    "coordinates": [
+      -98.07132969999999,
+      20.1734922
+    ],
+    "address": "Art 115 Constitucional, El Potro, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860ab0": {
+    "done": true,
+    "found": true,
+    "name": "Balneario El Aguacate",
+    "coordinates": [
+      -99.6411644,
+      20.6047369
+    ],
+    "address": "76547 Cadereyta de Montes, Qro., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860aca": {
+    "done": true,
+    "found": true,
+    "name": "Sendero Ecológico La Ceiba",
+    "coordinates": [
+      -97.8797934,
+      20.3887663
+    ],
+    "address": "Gran Canal, 73090 La Ceiba, Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad5": {
+    "done": true,
+    "found": true,
+    "name": "Tirolesa El Tizoc",
+    "coordinates": [
+      -97.9902031,
+      20.2030709
+    ],
+    "address": "73161, C. División del Sur 93, Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6bf": {
+    "done": true,
+    "found": true,
+    "name": "Centro Ecoturístico Necaxa",
+    "coordinates": [
+      -98.0024437,
+      20.211904099999998
+    ],
+    "address": "Nuevo Necaxa, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aa8": {
+    "done": true,
+    "found": true,
+    "name": "Balneario Las Truchas",
+    "coordinates": [
+      -98.10724689999999,
+      20.114403100000004
+    ],
+    "address": "Antonio Amador Quintero, 73167 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aab": {
+    "done": true,
+    "found": true,
+    "name": "Restaurante La Cabaña Serrana",
+    "coordinates": [
+      -97.95066589999999,
+      20.2424275
+    ],
+    "address": "73080, San Antonio, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab2": {
+    "done": true,
+    "found": true,
+    "name": "Presidencia Canaditas",
+    "coordinates": [
+      -98.0073723,
+      20.2114676
+    ],
+    "address": "Necaxa, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860acd": {
+    "done": true,
+    "found": true,
+    "name": "Presa de Tenango de las Flores",
+    "coordinates": [
+      -97.9926811,
+      20.199577899999998
+    ],
+    "address": "Parador turístico Tizoc, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad4": {
+    "done": true,
+    "found": true,
+    "name": "Museo Casa de Carranza",
+    "coordinates": [
+      -97.95845779999999,
+      20.276663799999998
+    ],
+    "address": "Pl. de La Constitución S/N, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad9": {
+    "done": true,
+    "found": true,
+    "name": "Café Flores de Tenango",
+    "coordinates": [
+      -98.00486409999999,
+      20.2055278
+    ],
+    "address": "6X4W+63, 73172 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6b5": {
+    "done": true,
+    "found": true,
+    "name": "Cascada de Patla",
+    "coordinates": [
+      -97.85328299999999,
+      20.2482085
+    ],
+    "address": "Principal 73270, 73274 Patla, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6b8": {
+    "done": true,
+    "found": true,
+    "name": "Mercado Municipal Xicotepec",
+    "coordinates": [
+      -97.9573135,
+      20.2777328
+    ],
+    "address": "Pl. de La Constitución, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c8": {
+    "done": true,
+    "found": true,
+    "name": "Hotel Mirador de la Sierra",
+    "coordinates": [
+      -98.0361255,
+      20.1794031
+    ],
+    "address": "Blvd. Bicentenario 69, El Derrumbe, Morelos, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aaf": {
+    "done": true,
+    "found": true,
+    "name": "Sendero Ecológico Cuautempan",
+    "coordinates": [
+      -97.9536084,
+      20.28877
+    ],
+    "address": "Nactanca Grande 108, Col el Tabacal, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab4": {
+    "done": true,
+    "found": true,
+    "name": "Cascada Salto del Águila",
+    "coordinates": [
+      -98.0731514,
+      20.1357975
+    ],
+    "address": "73167 Puga, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860aba": {
+    "done": true,
+    "found": true,
+    "name": "Capilla de Guadalupe Necaxa",
+    "coordinates": [
+      -98.009733,
+      20.2073555
+    ],
+    "address": "1º de Mayo 120, Juárez, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac0": {
+    "done": true,
+    "found": true,
+    "name": "Museo Regional de Huauchinango",
+    "coordinates": [
+      -98.0542157,
+      20.176366599999998
+    ],
+    "address": "Parque Escénico, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac4": {
+    "done": true,
+    "found": true,
+    "name": "Balneario Xolotla",
+    "coordinates": [
+      -98.05634560000001,
+      20.1942253
+    ],
+    "address": "73165 Totolapa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad7": {
+    "done": true,
+    "found": true,
+    "name": "Cerro Necaxaltépetl",
+    "coordinates": [
+      -97.98458199999999,
+      20.203349000000003
+    ],
+    "address": "A. López Mateos 1, Tlaltenco O Centro, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860adf": {
+    "done": true,
+    "found": true,
+    "name": "Zona de Pesca Presa Tenango",
+    "coordinates": [
+      -97.9926811,
+      20.199577899999998
+    ],
+    "address": "Parador turístico Tizoc, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae4": {
+    "done": true,
+    "found": true,
+    "name": "Plaza de la Constitución",
+    "coordinates": [
+      -98.0515798,
+      20.1750766
+    ],
+    "address": "Pl. de La Constitución, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae5": {
+    "done": true,
+    "found": true,
+    "name": "Restaurante Del Lago",
+    "coordinates": [
+      -98.03397749999999,
+      20.2072212
+    ],
+    "address": "Carretera México-tuxpan km 199 patoltecoya, Xicotepec de Juárez - Huauchinango 750, 73165 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae6": {
+    "done": true,
+    "found": true,
+    "name": "La Casona",
+    "coordinates": [
+      -98.05072009999999,
+      20.175032599999998
+    ],
+    "address": "Miguel Hidalgo 5, Centro, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6b7": {
+    "done": true,
+    "found": true,
+    "name": "Mirador de la Sierra Norte",
+    "coordinates": [
+      -97.9268087,
+      20.2687219
+    ],
+    "address": "Xicotepec, 73089 Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aae": {
+    "done": true,
+    "found": true,
+    "name": "Feria de Xicotepec",
+    "coordinates": [
+      -97.9608269,
+      20.2681048
+    ],
+    "address": "73080, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab8": {
+    "done": true,
+    "found": true,
+    "name": "Balneario Los Reyes",
+    "coordinates": [
+      -97.9601027,
+      20.180688699999997
+    ],
+    "address": "Puebla MX, Interserrana Pte. km 121, Necaxa, 73220 Xaltepuxtla, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860abd": {
+    "done": true,
+    "found": true,
+    "name": "Zona de Pesca Necaxa",
+    "coordinates": [
+      -98.00799219999999,
+      20.218224199999998
+    ],
+    "address": "73216 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac3": {
+    "done": true,
+    "found": true,
+    "name": "Cascada de Tenampulco",
+    "coordinates": [
+      -97.4453284,
+      20.1666886
+    ],
+    "address": "73502 Tenampulco, Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac7": {
+    "done": true,
+    "found": true,
+    "name": "Hotel Boutique Huauchinango",
+    "coordinates": [
+      -98.0361255,
+      20.1794031
+    ],
+    "address": "Blvd. Bicentenario 69, El Derrumbe, Morelos, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860adc": {
+    "done": true,
+    "found": true,
+    "name": "Mirador Presa Tenango",
+    "coordinates": [
+      -97.9926811,
+      20.199577899999998
+    ],
+    "address": "Parador turístico Tizoc, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae8": {
+    "done": true,
+    "found": true,
+    "name": "Iglesia del Santo Entierro",
+    "coordinates": [
+      -98.0530677,
+      20.1754647
+    ],
+    "address": "Calle 1, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aaa": {
+    "done": true,
+    "found": true,
+    "name": "Mirador El Ocotal",
+    "coordinates": [
+      -97.9268087,
+      20.2687219
+    ],
+    "address": "Xicotepec, 73089 Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aac": {
+    "done": true,
+    "found": true,
+    "name": "Café de la Sierra Xicotepec",
+    "coordinates": [
+      -97.9619882,
+      20.2830864
+    ],
+    "address": "Blvrd Benito Juárez 130, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aad": {
+    "done": true,
+    "found": true,
+    "name": "Hotel Rancho San Isidro",
+    "coordinates": [
+      -97.985602,
+      19.939847999999998
+    ],
+    "address": "W2Q7+WQ, 73310 Zacatlán, Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab9": {
+    "done": true,
+    "found": true,
+    "name": "Mirador Cerro Pelón",
+    "coordinates": [
+      -98.00209,
+      20.2121605
+    ],
+    "address": "Pl. Principal, Necaxa, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860acb": {
+    "done": true,
+    "found": true,
+    "name": "Mercado de Artesanías Huauchinango",
+    "coordinates": [
+      -98.0523911,
+      20.1738178
+    ],
+    "address": "Centro, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab7": {
+    "done": true,
+    "found": true,
+    "name": "Hotel Presa Necaxa",
+    "coordinates": [
+      -98.00265859999999,
+      20.2117279
+    ],
+    "address": "Miguel Negrete, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860abb": {
+    "done": true,
+    "found": true,
+    "name": "Feria de la Presa",
+    "coordinates": [
+      -98.00799219999999,
+      20.218224199999998
+    ],
+    "address": "73216 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860abf": {
+    "done": true,
+    "found": true,
+    "name": "Feria de Cuaresma de Huauchinango",
+    "coordinates": [
+      -98.07132969999999,
+      20.1734922
+    ],
+    "address": "Art 115 Constitucional, El Potro, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac6": {
+    "done": true,
+    "found": true,
+    "name": "Café Huauchinango Centro",
+    "coordinates": [
+      -98.05314829999999,
+      20.1735374
+    ],
+    "address": "Mercado municipal, de Huauchinango 73170, Centro, 73170 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac8": {
+    "done": true,
+    "found": true,
+    "name": "Mirador Los Pinos",
+    "coordinates": [
+      -98.0348653,
+      20.187486
+    ],
+    "address": "Los Pinos, El Derrumbe, Los Pinos, 73172 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad1": {
+    "done": true,
+    "found": true,
+    "name": "Mercado Isabel Díaz Castilla",
+    "coordinates": [
+      -97.984291,
+      20.2027721
+    ],
+    "address": "Tepexicotle Dos, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860adb": {
+    "done": true,
+    "found": true,
+    "name": "Balneario Río Tenango",
+    "coordinates": [
+      -97.9926811,
+      20.199577899999998
+    ],
+    "address": "Parador turístico Tizoc, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6b9": {
+    "done": true,
+    "found": true,
+    "name": "Parque Juárez",
+    "coordinates": [
+      -97.95814449999999,
+      20.2766345
+    ],
+    "address": "Col Centro, 73080 Xicotepec de Juárez, Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6bc": {
+    "done": true,
+    "found": true,
+    "name": "Balneario Poza Azul",
+    "coordinates": [
+      -98.4370565,
+      18.6843349
+    ],
+    "address": "Domicilio Conocido La Magdalena, 74397 Tepeojuma, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c0": {
+    "done": true,
+    "found": true,
+    "name": "Mirador de la Cañada",
+    "coordinates": [
+      -98.00209,
+      20.2121605
+    ],
+    "address": "Pl. Principal, Necaxa, 73200 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c6": {
+    "done": true,
+    "found": true,
+    "name": "Cerro de la Cruz",
+    "coordinates": [
+      -97.6741705,
+      19.873803199999998
+    ],
+    "address": "73653 Chalahuico, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ab1": {
+    "done": true,
+    "found": true,
+    "name": "Zona Hidroeléctrica de Necaxa",
+    "coordinates": [
+      -98.00050879999999,
+      20.217515600000002
+    ],
+    "address": "Presa de Necaxa, 73214 Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad8": {
+    "done": true,
+    "found": true,
+    "name": "Restaurante Mariscos La Presa Tenango",
+    "coordinates": [
+      -97.9926811,
+      20.199577899999998
+    ],
+    "address": "Parador turístico Tizoc, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6b6": {
+    "done": true,
+    "found": true,
+    "name": "Parroquia de San Juan Bautista",
+    "coordinates": [
+      -97.9583931,
+      20.2755728
+    ],
+    "address": "Iturbide 4, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6be": {
+    "done": true,
+    "found": true,
+    "name": "Puente Colgante de Necaxa",
+    "coordinates": [
+      -97.9997705,
+      20.220418400000003
+    ],
+    "address": "Juan Galindo, 73216 Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c5": {
+    "done": true,
+    "found": true,
+    "name": "Mercado de Huauchinango",
+    "coordinates": [
+      -98.0523911,
+      20.1738178
+    ],
+    "address": "Centro, 73160 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aa6": {
+    "done": true,
+    "found": true,
+    "name": "Centro Ceremonial Xochipilli",
+    "coordinates": [
+      -97.9558524,
+      20.2759295
+    ],
+    "address": "Xochipila, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860abc": {
+    "done": true,
+    "found": true,
+    "name": "Sendero Barranca Grande",
+    "coordinates": [
+      -98.00799219999999,
+      20.218224199999998
+    ],
+    "address": "73216 Nuevo Necaxa, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860add": {
+    "done": true,
+    "found": true,
+    "name": "Vivero Regional de Flores",
+    "coordinates": [
+      -97.9917993,
+      20.2051859
+    ],
+    "address": "Hidalgo 568, Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6bb": {
+    "done": true,
+    "found": true,
+    "name": "Grutas de Karmidas",
+    "coordinates": [
+      -97.7148378,
+      20.005615199999998
+    ],
+    "address": "Carr. a Ixtepec S/N-Int. 635, Centro, 73440 Zapotitlán de Méndez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a98df5e3c3303884aa6c7": {
+    "done": true,
+    "found": true,
+    "name": "Cañón del Río Necaxa",
+    "coordinates": [
+      -98.0618748,
+      20.160478500000004
+    ],
+    "address": "Huauchinango, Puebla, Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aa7": {
+    "done": true,
+    "found": true,
+    "name": "Palacio Municipal de Xicotepec",
+    "coordinates": [
+      -97.95810069999999,
+      20.2761289
+    ],
+    "address": "Pl. de La Constitución, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e49b036cb55ce860aa9": {
+    "done": true,
+    "found": true,
+    "name": "Cascada El Salto",
+    "coordinates": [
+      -97.98917159999999,
+      20.2756831
+    ],
+    "address": "73088 San Agustín Atlihuácan, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ac5": {
+    "done": true,
+    "found": true,
+    "name": "Restaurante Las Truchas de Huauchinango",
+    "coordinates": [
+      -98.10724689999999,
+      20.114403100000004
+    ],
+    "address": "Antonio Amador Quintero, 73167 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860acc": {
+    "done": true,
+    "found": true,
+    "name": "Puente Negro de Huauchinango",
+    "coordinates": [
+      -98.0265266,
+      20.177199899999998
+    ],
+    "address": "5 de Octubre, 73173 Huauchinango, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ad2": {
+    "done": true,
+    "found": true,
+    "name": "Expo Flor Tenango",
+    "coordinates": [
+      -97.9917993,
+      20.2051859
+    ],
+    "address": "Hidalgo 568, Tlacpac, 73161 Tenango de las Flores, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6a9e4ab036cb55ce860ada": {
+    "done": true,
+    "found": true,
+    "name": "Hotel Rural Tenango",
+    "coordinates": [
+      -97.99807460000001,
+      20.20647
+    ],
+    "address": "73161 Tlalpac, Tlacpac, 73161 México, Pue., Mexico",
+    "imageAdded": false
+  },
+  "6a6aa00db036cb55ce860ae3": {
+    "done": true,
+    "found": true,
+    "name": "Hotel Casablanca Xicotepec",
+    "coordinates": [
+      -97.9637654,
+      20.264497499999997
+    ],
+    "address": "Blvrd Benito Juárez 264, Col Centro, 73080 Xicotepec de Juárez, Pue., Mexico",
+    "imageAdded": false
+  }
+}

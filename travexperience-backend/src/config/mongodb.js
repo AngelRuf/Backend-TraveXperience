@@ -19,10 +19,22 @@ mongoose.set('strictQuery', true);
  * para monitorear el estado de la conexión durante el ciclo de vida de la app.
  */
 const connectMongoDB = async () => {
+  if (!MONGO_URI) {
+    logger.error('❌ La variable de entorno MONGO_URI no está definida.');
+    process.exit(1);
+  }
+
+  // Registrar listeners antes de iniciar la conexión
+  mongoose.connection.on('disconnected', () => {
+    logger.warn('⚠️  MongoDB se ha desconectado.');
+  });
+
+  mongoose.connection.on('error', (err) => {
+    logger.error(`❌ Error en la conexión de MongoDB: ${err.message}`);
+  });
+
   try {
     await mongoose.connect(MONGO_URI, {
-      // Mongoose 8 ya no requiere useNewUrlParser / useUnifiedTopology,
-      // se dejan documentadas las opciones más comunes por si se requiere ajustar el pool.
       maxPoolSize: 10,
       serverSelectionTimeoutMS: 10000,
     });
@@ -31,14 +43,13 @@ const connectMongoDB = async () => {
     logger.error(`❌ Error al conectar con MongoDB: ${error.message}`);
     process.exit(1);
   }
-
-  mongoose.connection.on('disconnected', () => {
-    logger.warn('⚠️  MongoDB se ha desconectado.');
-  });
-
-  mongoose.connection.on('error', (err) => {
-    logger.error(`❌ Error en la conexión de MongoDB: ${err.message}`);
-  });
 };
+
+// Cierre limpio al detener el servidor
+process.on('SIGINT', async () => {
+  await mongoose.connection.close();
+  logger.info('🔌 Conexión a MongoDB cerrada por terminación de la app.');
+  process.exit(0);
+});
 
 module.exports = { connectMongoDB, mongoose };
