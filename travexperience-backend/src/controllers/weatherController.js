@@ -53,35 +53,21 @@ const getWeather = async (req, res, next) => {
 const getForecast = async (req, res, next) => {
   try {
     const { lat, lng } = req.query;
-    if (!lat || !lng) {
-      return res.status(400).json({ success: false, message: 'lat y lng son requeridos' });
+    if (lat === undefined || lng === undefined) {
+      throw new AppError('Se requieren los parámetros "lat" y "lng".', 400);
     }
 
-    // Usando Open-Meteo (gratuito, sin API key y con datos diarios confiables para Sierra Norte)
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lng}&daily=weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max&timezone=America%2FMexico_City`;
-    const response = await fetch(url);
-    const raw = await response.json();
+    let forecast;
+    try {
+      forecast = await weatherService.getForecastByCoords(lat, lng);
+    } catch (weatherError) {
+      throw new AppError('El servicio de clima no está disponible en este momento.', 503);
+    }
 
-    const weatherDescriptions = {
-      0: 'Despejado', 1: 'Mayormente despejado', 2: 'Parcialmente nublado', 3: 'Nublado',
-      45: 'Neblina', 48: 'Neblina densa', 51: 'Llovizna ligera', 61: 'Lluvia ligera',
-      63: 'Lluvia moderada', 65: 'Lluvia fuerte', 80: 'Chubascos', 95: 'Tormenta eléctrica',
-    };
-
-    const forecast = (raw.daily?.time || []).map((date, i) => ({
-      date,
-      tempMin: raw.daily.temperature_2m_min[i],
-      tempMax: raw.daily.temperature_2m_max[i],
-      description: weatherDescriptions[raw.daily.weathercode[i]] || 'Condición variable',
-      rainProbability: raw.daily.precipitation_probability_max[i] ?? 0,
-    }));
-
-    return res.json({
-      success: true,
-      data: { forecast },
-    });
+    return ApiResponse.success(res, 200, 'Pronóstico obtenido.', { forecast });
   } catch (error) {
-    next(error);
+    return next(error);
   }
 };
-module.exports = { getWeather };
+
+module.exports = { getWeather, getForecast };

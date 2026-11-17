@@ -13,7 +13,7 @@ const localTourismController = require('../controllers/localTourismController');
 const Place = require('../models/mongodb/Place');
 const { protect, optionalAuth, authorize } = require('../middlewares/authMiddleware');
 const validateRequest = require('../middlewares/validateRequest');
-const { placesUpload } = require('../utils/upload');
+const uploadPlacePhotos = require('../middlewares/uploadPlacePhotos');
 const { publicCatalog } = require('../middlewares/cacheControl');
 
 router.get(
@@ -60,6 +60,7 @@ router.post(
   '/places',
   protect,
   authorize('administrador'),
+  uploadPlacePhotos,
   [
     body('name').trim().notEmpty().withMessage('El nombre es obligatorio.'),
     body('category').isIn(Place.CATEGORIES).withMessage('Categoría inválida.'),
@@ -111,7 +112,17 @@ router.post(
   '/places/:id/images',
   protect,
   authorize('administrador'),
-  placesUpload.array('images', 10),
+  uploadPlacePhotos,
+  [param('id').isMongoId().withMessage('Identificador de lugar inválido.')],
+  validateRequest,
+  localTourismController.addPlaceImages
+);
+
+router.post(
+  '/:id/photos',
+  protect,
+  authorize('administrador'),
+  uploadPlacePhotos,
   [param('id').isMongoId().withMessage('Identificador de lugar inválido.')],
   validateRequest,
   localTourismController.addPlaceImages

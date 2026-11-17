@@ -1,24 +1,32 @@
 // controllers/riskController.js
-const RiskAlert = require('../models/RiskAlert');
+const RiskAlert = require('../models/mongodb/RiskAlert');
+const AppError = require('../utils/AppError');
 
 const getNearbyRisks = async (req, res, next) => {
   try {
     const { lat, lng, radius = 50000, municipality } = req.query;
     const now = new Date();
+    if ((lat === undefined) !== (lng === undefined)) {
+      throw new AppError('Se deben proporcionar "lat" y "lng" juntos.', 400);
+    }
+    if (lat === undefined && !municipality) {
+      throw new AppError('Se requieren coordenadas o el parámetro "municipality".', 400);
+    }
 
     const filter = {
       expiresAt: { $gt: now },
     };
 
     if (municipality) {
-      filter.municipality = new RegExp(`^${municipality}$`, 'i');
+      const escapedMunicipality = municipality.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      filter.municipality = new RegExp(`^${escapedMunicipality}$`, 'i');
     }
 
-    if (lat && lng) {
+    if (lat !== undefined && lng !== undefined) {
       filter.location = {
         $near: {
-          $geometry: { type: 'Point', coordinates: [parseFloat(lng), parseFloat(lat)] },
-          $maxDistance: parseInt(radius, 10),
+          $geometry: { type: 'Point', coordinates: [Number(lng), Number(lat)] },
+          $maxDistance: Number(radius),
         },
       };
     }
@@ -31,7 +39,7 @@ const getNearbyRisks = async (req, res, next) => {
       severity: a.severity,
       recommendation: a.recommendation,
       municipality: a.municipality,
-      location: a.location, // { type: 'Point', coordinates: [lng, lat] }
+      location: a.location,
       source: a.source,
       updatedAt: a.updatedAt,
       expiresAt: a.expiresAt,

@@ -19,7 +19,6 @@ const geocodingService = require('../services/geocodingService');
 const AppError = require('../utils/AppError');
 const ApiResponse = require('../utils/apiResponse');
 const logger = require('../utils/logger');
-const { toPublicUrl } = require('../utils/upload');
 const { withNormalizedImages } = require('../utils/mediaUrls');
 
 /**
@@ -243,7 +242,10 @@ const createPlace = async (req, res, next) => {
 
     // Sin imágenes => images: [] (el frontend muestra una imagen de respaldo).
     // Para fotos libres corre scripts/enrichPlaces.js.
-    const finalImages = Array.isArray(images) ? images : [];
+    const finalImages = [
+      ...(Array.isArray(images) ? images : []),
+      ...(req.uploadedImageUrls || []),
+    ];
 
     let place;
     try {
@@ -294,7 +296,7 @@ const deletePlace = async (req, res, next) => {
 
 /**
  * POST /local/places/:id/images
- * Solo administradores. Multipart/form-data, campo "images" (hasta 10).
+ * Solo administradores. Multipart/form-data, campo "images" (hasta 5).
  * Sube el/los archivo(s) y hace push de las URLs resultantes al arreglo
  * `images` del lugar. Responde con el mismo formato que updatePlace.
  */
@@ -305,12 +307,11 @@ const addPlaceImages = async (req, res, next) => {
       throw new AppError('Lugar no encontrado.', 404);
     }
 
-    if (!req.files || req.files.length === 0) {
+    if (!req.uploadedImageUrls || req.uploadedImageUrls.length === 0) {
       throw new AppError('Se requiere al menos un archivo de imagen en el campo "images".', 400);
     }
 
-    const uploadedUrls = req.files.map((file) => toPublicUrl(file.path));
-    place.images = [...(place.images || []), ...uploadedUrls];
+    place.images = [...(place.images || []), ...req.uploadedImageUrls];
     await place.save();
 
     return ApiResponse.success(res, 200, 'Imágenes agregadas al lugar.', { place });

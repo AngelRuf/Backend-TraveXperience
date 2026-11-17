@@ -1,5 +1,5 @@
 // models/RiskAlert.js
-const { mongoose } = require('../config/mongodb');
+const { mongoose } = require('../../config/mongodb');
 
 const riskAlertSchema = new mongoose.Schema(
   {

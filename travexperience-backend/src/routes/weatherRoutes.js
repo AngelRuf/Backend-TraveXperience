@@ -26,5 +26,13 @@ router.get(
   validateRequest,
   weatherController.getWeather
 );
-router.get('/forecast', weatherController.getForecast);
+router.get(
+  '/forecast',
+  [
+    query('lat').exists().bail().isFloat({ min: -90, max: 90 }).withMessage('Latitud inválida.'),
+    query('lng').exists().bail().isFloat({ min: -180, max: 180 }).withMessage('Longitud inválida.'),
+  ],
+  validateRequest,
+  weatherController.getForecast
+);
 module.exports = router;

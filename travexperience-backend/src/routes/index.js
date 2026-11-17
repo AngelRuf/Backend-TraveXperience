@@ -32,6 +32,7 @@ router.use('/itineraries', itineraryRoutes); // Módulo 3: Turismo Foráneo (CRU
 router.use('/reviews', reviewRoutes); // Módulo 4: Sistema de Reseñas
 router.use('/wearable', wearableRoutes); // Módulo 5: Interconexión Wearable
 router.use('/weather', weatherRoutes); // Módulo 6: Clima (OpenWeatherMap)
+router.use('/risks', riskRoutes); // Alertas públicas de riesgos cercanos
 router.use('/payments', paymentRoutes); // Módulo 7: Pagos (Stripe)
 //router.use('/maps', mapsRoutes); // Módulo 8: Geocodificación (Nominatim / OSM)
 router.use('/favorites', favoriteRoutes); // Módulo 9: Favoritos
@@ -43,7 +44,7 @@ router.use('/admin', adminRoutes); // Módulo 12: Panel de Administración (Dash
 // mismo router (mismo controller, mismas validaciones) que /hotels, sin
 // duplicar código. Las mutaciones (POST/PUT/DELETE) ya exigen
 // protect+authorize('administrador') dentro de hotelRoutes.js.
-router.use('/admin/risks', riskRoutes); // Módulo 13: Riesgos y Alertas (Admin)
+router.use('/admin/risks', riskRoutes); // Alias administrativo de riesgos
 router.use('/admin/hotels', hotelRoutes);
 router.use('/presence', presenceRoutes); // "N personas viendo esto ahora mismo" (heartbeat + polling)
 router.use('/ai', aiRoutes); // Presupuesto + Tipo de viajero mediante IA

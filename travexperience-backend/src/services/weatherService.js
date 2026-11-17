@@ -17,11 +17,13 @@ const logger = require('../utils/logger');
 const OPENWEATHER_BASE_URL = 'https://api.openweathermap.org/data/2.5/forecast';
 const CACHE_TTL_MS = 12 * 60 * 1000; // 12 minutos
 const REQUEST_TIMEOUT_MS = 8000;
+const OPEN_METEO_URL = 'https://api.open-meteo.com/v1/forecast';
 
 // Cache en memoria: Map<"lat,lng", { data, expiresAt }>
 // NOTA: vive en el proceso Node actual; si se escala a varias instancias
 // cada una mantiene su propia caché (suficiente para el piloto).
 const cache = new Map();
+const forecastCache = new Map();
 
 const roundCoord = (value) => Number(value).toFixed(2);
 
@@ -39,6 +41,21 @@ const getFromCache = (key) => {
 
 const setCache = (key, data) => {
   cache.set(key, { data, expiresAt: Date.now() + CACHE_TTL_MS });
+};
+
+const weatherDescriptions = {
+  0: 'Despejado',
+  1: 'Mayormente despejado',
+  2: 'Parcialmente nublado',
+  3: 'Nublado',
+  45: 'Neblina',
+  48: 'Neblina densa',
+  51: 'Llovizna ligera',
+  61: 'Lluvia ligera',
+  63: 'Lluvia moderada',
+  65: 'Lluvia fuerte',
+  80: 'Chubascos',
+  95: 'Tormenta eléctrica',
 };
 
 /**
@@ -116,4 +133,77 @@ const getWeatherByCoords = async (lat, lng) => {
   return { ...payload, cached: false };
 };
 
-module.exports = { getWeatherByCoords };
+const getForecastByCoords = async (lat, lng) => {
+  const latitude = Number(lat);
+  const longitude = Number(lng);
+  if (
+    !Number.isFinite(latitude) ||
+    !Number.isFinite(longitude) ||
+    latitude < -90 ||
+    latitude > 90 ||
+    longitude < -180 ||
+    longitude > 180
+  ) {
+    throw new Error('Coordenadas inválidas.');
+  }
+
+  const cacheKey = buildCacheKey(latitude, longitude);
+  const cached = getFromCacheForForecast(cacheKey);
+  if (cached) return cached;
+
+  const url = new URL(OPEN_METEO_URL);
+  url.searchParams.set('latitude', latitude);
+  url.searchParams.set('longitude', longitude);
+  url.searchParams.set(
+    'daily',
+    'weathercode,temperature_2m_max,temperature_2m_min,precipitation_probability_max'
+  );
+  url.searchParams.set('timezone', 'America/Mexico_City');
+
+  let response;
+  try {
+    response = await fetch(url, { signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS) });
+  } catch (networkError) {
+    logger.error(`Error de red al consultar Open-Meteo: ${networkError.message}`);
+    throw new Error('No se pudo contactar al servicio de clima.');
+  }
+
+  if (!response.ok) {
+    logger.warn(`Open-Meteo respondió ${response.status} para [${cacheKey}].`);
+    throw new Error('El servicio de clima no respondió correctamente.');
+  }
+
+  const raw = await response.json();
+  const daily = raw.daily;
+  if (
+    !daily ||
+    !Array.isArray(daily.time) ||
+    !Array.isArray(daily.temperature_2m_min) ||
+    !Array.isArray(daily.temperature_2m_max) ||
+    !Array.isArray(daily.weathercode)
+  ) {
+    throw new Error('La respuesta de Open-Meteo no contiene un pronóstico válido.');
+  }
+
+  const forecast = daily.time.map((date, index) => ({
+    date,
+    tempMin: daily.temperature_2m_min[index],
+    tempMax: daily.temperature_2m_max[index],
+    description: weatherDescriptions[daily.weathercode[index]] || 'Condición variable',
+    rainProbability: daily.precipitation_probability_max?.[index] ?? 0,
+  }));
+  forecastCache.set(cacheKey, { data: forecast, expiresAt: Date.now() + CACHE_TTL_MS });
+  return forecast;
+};
+
+const getFromCacheForForecast = (key) => {
+  const entry = forecastCache.get(key);
+  if (!entry) return null;
+  if (Date.now() > entry.expiresAt) {
+    forecastCache.delete(key);
+    return null;
+  }
+  return entry.data;
+};
+
+module.exports = { getWeatherByCoords, getForecastByCoords };

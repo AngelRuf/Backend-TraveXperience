@@ -1,13 +1,20 @@
 const express = require('express');
+const { query } = require('express-validator');
 const router = express.Router();
 const { getNearbyRisks } = require('../controllers/riskController');
-// Si tienes middlewares de auth/roles para crear alertas desde el panel admin:
-// const { protect, authorize } = require('../middlewares/auth');
+const validateRequest = require('../middlewares/validateRequest');
 
 // GET /api/v1/risks/nearby?lat=&lng=&radius=&municipality=
-router.get('/nearby', getNearbyRisks);
-
-// Opcional: endpoint protegido para registrar o actualizar avisos oficiales
-// router.post('/', protect, authorize('admin'), createRiskAlert);
+router.get(
+  '/nearby',
+  [
+    query('lat').optional().isFloat({ min: -90, max: 90 }).withMessage('Latitud inválida.'),
+    query('lng').optional().isFloat({ min: -180, max: 180 }).withMessage('Longitud inválida.'),
+    query('radius').optional().isInt({ min: 100, max: 50000 }).withMessage('Radio inválido.'),
+    query('municipality').optional().trim().isLength({ min: 1, max: 100 }),
+  ],
+  validateRequest,
+  getNearbyRisks
+);
 
 module.exports = router;
