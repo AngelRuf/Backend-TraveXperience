@@ -26,5 +26,5 @@ router.get(
   validateRequest,
   weatherController.getWeather
 );
-
+router.get('/forecast', weatherController.getForecast);
 module.exports = router;

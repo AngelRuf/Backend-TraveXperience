@@ -15,8 +15,13 @@
 
 const logger = require('../utils/logger');
 
-const DEV_ORIGINS = ['http://localhost:5173', 'http://127.0.0.1:5173'];
-const DEV_LAN_PATTERN = /^http:\/\/(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}):5173$/;
+const DEV_ORIGINS = [
+  'http://localhost:5173',
+  'http://127.0.0.1:5173',
+  'http://localhost:4173',
+  'http://127.0.0.1:4173',
+];
+const DEV_LAN_PATTERN = /^http:\/\/(10\.\d{1,3}\.\d{1,3}\.\d{1,3}|192\.168\.\d{1,3}\.\d{1,3}):(5173|4173)$/;
 
 const ALLOWED_METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
 // X-Client-Platform lo envía el frontend/app para el log de actividad.

@@ -24,6 +24,7 @@ const userRoutes = require('./userRoutes');
 const adminRoutes = require('./adminRoutes');
 const presenceRoutes = require('./presenceRoutes');
 const aiRoutes = require('./aiRoutes');
+const riskRoutes = require('./riskRoutes');
 
 router.use('/auth', authRoutes); // Módulo 1: Autenticación y Perfiles
 router.use('/local', localTourismRoutes); // Módulo 2: Turismo Local ("Cerca de Mí")
@@ -42,6 +43,7 @@ router.use('/admin', adminRoutes); // Módulo 12: Panel de Administración (Dash
 // mismo router (mismo controller, mismas validaciones) que /hotels, sin
 // duplicar código. Las mutaciones (POST/PUT/DELETE) ya exigen
 // protect+authorize('administrador') dentro de hotelRoutes.js.
+router.use('/admin/risks', riskRoutes); // Módulo 13: Riesgos y Alertas (Admin)
 router.use('/admin/hotels', hotelRoutes);
 router.use('/presence', presenceRoutes); // "N personas viendo esto ahora mismo" (heartbeat + polling)
 router.use('/ai', aiRoutes); // Presupuesto + Tipo de viajero mediante IA
